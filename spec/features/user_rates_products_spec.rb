@@ -45,6 +45,24 @@ describe 'user rates product' do
       expect(current_path).to eq account_ratings_path
     end
 
+    it 'they cannot edit the rating after 15 minutes' do
+      product = FactoryGirl.create(:product,
+                                   title: 'Princess',
+                                   created_at: Time.now)
+      rating = FactoryGirl.create(:rating,
+                                  user_id: @user.id,
+                                  product_id: product.id,
+                                  created_at: Time.now)
+
+      Timecop.travel(16*60)
+      visit edit_product_rating_path(product, rating)
+      expect(page).to have_content('Edit your rating of')
+      fill_in 'Title', with: 'CHANGED MY MIND!'
+      click_button 'Submit'
+
+      expect(page).to_not have_content("Successfully updated rating.")
+    end
+
     it 'their edit fails with missing information' do
       product = FactoryGirl.create(:product, title: 'Princess')
       rating = FactoryGirl.create(:rating, user_id: @user.id, product_id: product.id)
@@ -54,5 +72,6 @@ describe 'user rates product' do
       click_button 'Submit'
       expect(page).to have_content("can't be blank")
     end
+
   end
 end

@@ -34,6 +34,7 @@ group :development, :test do
   gem 'capybara'
   gem 'simplecov'
   gem 'quiet_assets'
+  gem 'timecop'
 end
 
 group :test do
